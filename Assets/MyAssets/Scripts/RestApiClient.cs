@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,16 @@ public class RestApiClient : MonoBehaviour
 
     // api url
     public string serverUrl;
+
+    [Serializable]
+    class PlayerCharacter
+    {
+        public string id;
+        public string name;
+        public int level;
+        public int health;
+        public int experience;
+    }
 
     // Start is called before the first frame update
     void Start()
