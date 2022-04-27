@@ -39,6 +39,9 @@ public class RestApiClient : MonoBehaviour
     }
 
     // https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.Get.html
+    // https://docs.unity3d.com/2020.3/Documentation/Manual/Coroutines.html
+    // It’s best to use coroutines if you need to deal with long asynchronous operations, such as waiting for HTTP transfers,
+    // asset loads, or file I/O to complete.
     IEnumerator GetRequest(string uri)
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
