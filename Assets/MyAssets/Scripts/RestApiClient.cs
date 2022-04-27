@@ -59,7 +59,12 @@ public class RestApiClient : MonoBehaviour
                     Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                    // https://docs.unity3d.com/Manual/JSONSerialization.html
+                    PlayerCharacter playerCharacter = new PlayerCharacter();
+                    playerCharacter = JsonUtility.FromJson<PlayerCharacter>(webRequest.downloadHandler.text);
+
+                    Debug.Log(pages[page] + ":\nReceived (player character object): " + JsonUtility.ToJson(playerCharacter));
+                    //Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
                     break;
             }
         }
