@@ -39,6 +39,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(GetPlayerCharacter("c22a5113-e2c8-4bc0-94eb-24e6eea5b6d0"));
         StartCoroutine(GetAllPlayerCharacters());
         StartCoroutine(GetAllPlayerCharactersByAccountId("90fdbf9c-167f-4228-a081-73c62fbfac9e"));
+        StartCoroutine(CreatePlayerCharacter());
     }
 
     // Update is called once per frame
@@ -85,6 +86,25 @@ public class RestApiClient : MonoBehaviour
             playerCharacterGroup = body;
         });
         Debug.Log(":\nGetAllPlayerCharactersByAccountId: " + JsonUtility.ToJson(playerCharacterGroup));
+    }
+
+    IEnumerator CreatePlayerCharacter()
+    {
+        PlayerCharacter playerCharacter = new PlayerCharacter();
+
+        WWWForm form = new WWWForm();
+        form.AddField("accountId", "90fdbf9c-167f-4228-a081-73c62fbfac9e");
+        form.AddField("name", "test");
+        form.AddField("level", 2);
+        form.AddField("health", 90);
+        form.AddField("experience", 100);
+
+        // Request and wait for the desired player character body.
+        yield return PostRequest<PlayerCharacter>($"{serverUrl}/{PlayerCharacterApiName}", form, (response) =>
+        {
+            playerCharacter = response;
+        });
+        Debug.Log(":\nCreatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
     }
 
     #region Http methods
@@ -146,6 +166,30 @@ public class RestApiClient : MonoBehaviour
                     //http://answers.unity.com/answers/1503085/view.html
                     callback(JsonUtility.FromJson<T>($"{{\"group\":{webRequest.downloadHandler.text}}}")); // response body
                     break;
+            }
+        }
+    }
+    /// <summary>
+    /// Keep in mind that the Content-Type header will be set to application/x-www-form-urlencoded by default.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="uri"></param>
+    /// <param name="form"></param>
+    /// <param name="callback"></param>
+    /// <returns></returns>
+    private IEnumerator PostRequest<T>(string uri, WWWForm form, HttpResponse<T> callback)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Post(uri, form))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError($"Error: {webRequest.error} \nuri: {uri}");
+            }
+            else
+            {
+                callback(JsonUtility.FromJson<T>(webRequest.downloadHandler.text));
             }
         }
     }
