@@ -38,6 +38,7 @@ public class RestApiClient : MonoBehaviour
     {
         StartCoroutine(GetPlayerCharacter("c22a5113-e2c8-4bc0-94eb-24e6eea5b6d0"));
         StartCoroutine(GetAllPlayerCharacters());
+        StartCoroutine(GetAllPlayerCharactersByAccountId("90fdbf9c-167f-4228-a081-73c62fbfac9e"));
     }
 
     // Update is called once per frame
@@ -72,6 +73,18 @@ public class RestApiClient : MonoBehaviour
             playerCharacterGroup = body;
         });
         Debug.Log(":\nGetAllPlayerCharacters: " + JsonUtility.ToJson(playerCharacterGroup));
+    }
+
+    IEnumerator GetAllPlayerCharactersByAccountId(string accountId)
+    {
+        PlayerCharacterGroup playerCharacterGroup = new PlayerCharacterGroup();
+
+        // Request and wait for the desired player character body.
+        yield return GetAllRequest<PlayerCharacterGroup>($"{serverUrl}/{PlayerCharacterApiName}?account_id={accountId}", (body) =>
+        {
+            playerCharacterGroup = body;
+        });
+        Debug.Log(":\nGetAllPlayerCharactersByAccountId: " + JsonUtility.ToJson(playerCharacterGroup));
     }
 
     #region Http methods
