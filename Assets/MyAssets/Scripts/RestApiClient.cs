@@ -59,6 +59,7 @@ public class RestApiClient : MonoBehaviour
 
     }
 
+    #region Player Character
     // return a value from a coroutine
     // http://answers.unity.com/answers/1248539/view.html
     IEnumerator GetPlayerCharacter(string id)
@@ -147,6 +148,7 @@ public class RestApiClient : MonoBehaviour
         });
         Debug.Log("Success:\nDeletePlayerCharacter: " + JsonUtility.ToJson(deleteResponseMessage));
     }
+    #endregion
 
     #region Http methods
     private enum RequestType
