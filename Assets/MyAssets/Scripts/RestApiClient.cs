@@ -179,7 +179,7 @@ public class RestApiClient : MonoBehaviour
     {
         Account account = new Account();
 
-        // Request and wait for the desired account body.
+        // Request and wait for the desired body.
         yield return GetRequest<Account>($"{serverUrl}/{AccountApiName}/{id}", (body) =>
         {
             account = body;
