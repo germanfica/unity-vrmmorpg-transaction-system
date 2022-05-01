@@ -220,8 +220,8 @@ public class RestApiClient : MonoBehaviour
     /// Keep in mind that the Content-Type header will be set to application/json by default.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="uri"></param>
-    /// <param name="form"></param>
+    /// <param name="url"></param>
+    /// <param name="body"></param>
     /// <param name="callback"></param>
     /// <returns></returns>
     private IEnumerator PostRequest<T>(string url, T body, HttpResponse<T> callback)
