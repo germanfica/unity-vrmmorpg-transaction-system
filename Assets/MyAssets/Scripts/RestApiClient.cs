@@ -50,6 +50,7 @@ public class RestApiClient : MonoBehaviour
         public string first_name;
         public string last_name;
         public string email;
+        public string password;
     }
 
     [Serializable]
@@ -71,6 +72,7 @@ public class RestApiClient : MonoBehaviour
         */
         StartCoroutine(GetAccount("50f622a6-36b0-40ad-870a-559c87950a75"));
         StartCoroutine(GetAllAccounts());
+        StartCoroutine(CreateAccount());
     }
 
     // Update is called once per frame
@@ -194,6 +196,26 @@ public class RestApiClient : MonoBehaviour
             accountGroup = body;
         });
         Debug.Log("Success:\nGetAllAccounts: " + JsonUtility.ToJson(accountGroup));
+    }
+
+    IEnumerator CreateAccount()
+    {
+        // Create object
+        Account account = new Account();
+
+        // Set values
+        account.username = "testaccount1";
+        account.first_name = "testy";
+        account.last_name = "test";
+        account.email = "test1@mail";
+        account.password = "12345678";
+
+        // Request and wait for the desired body.
+        yield return PostRequest<Account>($"{serverUrl}/{AccountApiName}", account, (response) =>
+        {
+            account = response;
+        });
+        Debug.Log("Success:\nCreateAccount: " + JsonUtility.ToJson(account));
     }
     #endregion
 
