@@ -42,15 +42,28 @@ public class RestApiClient : MonoBehaviour
         public PlayerCharacter[] group; // The variable name must be: group. Because of the GetAllRequest IEnumerator return value.
     }
 
+    [Serializable]
+    class Account
+    {
+        public string id;
+        public string username;
+        public string first_name;
+        public string last_name;
+        public string email;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        /*
         StartCoroutine(GetPlayerCharacter("b7810c13-f634-4420-9c0b-3cce0151285a"));
         StartCoroutine(GetAllPlayerCharacters());
         StartCoroutine(GetAllPlayerCharactersByAccountId("90fdbf9c-167f-4228-a081-73c62fbfac9e"));
         StartCoroutine(CreatePlayerCharacter());
         StartCoroutine(UpdatePlayerCharacter("a764e5b1-ed6e-4544-84b4-1e996b7ea87c"));
         StartCoroutine(DeletePlayerCharacter("e1233185-d46f-4b96-912e-099d124c0250"));
+        */
+        StartCoroutine(GetAccount("50f622a6-36b0-40ad-870a-559c87950a75"));
     }
 
     // Update is called once per frame
@@ -147,6 +160,21 @@ public class RestApiClient : MonoBehaviour
             deleteResponseMessage = response;
         });
         Debug.Log("Success:\nDeletePlayerCharacter: " + JsonUtility.ToJson(deleteResponseMessage));
+    }
+    #endregion
+
+    #region Account
+    IEnumerator GetAccount(string id)
+    {
+        Account account = new Account();
+
+        // Request and wait for the desired account body.
+        yield return GetRequest<Account>($"{serverUrl}/{AccountApiName}/{id}", (body) =>
+        {
+            account = body;
+        });
+
+        Debug.Log($"Success:\nGetAccount with id {id}: {JsonUtility.ToJson(account)}");
     }
     #endregion
 
