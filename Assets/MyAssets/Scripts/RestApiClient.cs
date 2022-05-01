@@ -45,7 +45,7 @@ public class RestApiClient : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(GetPlayerCharacter("c22a5113-e2c8-4bc0-94eb-24e6eea5b6d0"));
+        StartCoroutine(GetPlayerCharacter("b7810c13-f634-4420-9c0b-3cce0151285a"));
         StartCoroutine(GetAllPlayerCharacters());
         StartCoroutine(GetAllPlayerCharactersByAccountId("90fdbf9c-167f-4228-a081-73c62fbfac9e"));
         StartCoroutine(CreatePlayerCharacter());
@@ -72,7 +72,7 @@ public class RestApiClient : MonoBehaviour
             playerBody = body;
         });
 
-        Debug.Log($":\nGetPlayerCharacter with id {id}: {JsonUtility.ToJson(playerBody)}");
+        Debug.Log($"Success:\nGetPlayerCharacter with id {id}: {JsonUtility.ToJson(playerBody)}");
     }
 
     IEnumerator GetAllPlayerCharacters()
@@ -180,7 +180,6 @@ public class RestApiClient : MonoBehaviour
                     break;
                 case UnityWebRequest.Result.Success:
                     // https://docs.unity3d.com/Manual/JSONSerialization.html
-                    Debug.Log("Json: " + webRequest.downloadHandler.text);
                     callback(JsonUtility.FromJson<T>(webRequest.downloadHandler.text)); // response body
                     break;
             }
