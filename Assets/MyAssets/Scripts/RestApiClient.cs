@@ -96,6 +96,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(GetItem("27f66b76-5642-49dc-8455-d495ea1ff1f4"));
         StartCoroutine(GetAllItems());
         StartCoroutine(CreateItem());
+        StartCoroutine(UpdateItem("cb99f0fb-7e9d-4991-8612-c0e3eab81b15"));
     }
 
     // Update is called once per frame
@@ -318,6 +319,26 @@ public class RestApiClient : MonoBehaviour
             item = response;
         });
         Debug.Log("Success:\nCreateItem: " + JsonUtility.ToJson(item));
+    }
+
+    IEnumerator UpdateItem(string id)
+    {
+        // Create object
+        Item item = new Item();
+
+        // Set values
+        //item.player_character_id = "a9293f52-9937-4531-a424-833793c1f3eb";
+        //item.player_character_id = "a5847585-f634-4f52-97b1-3bdbc349b493";
+        item.name = "Green apple";
+        item.level = 2;
+        item.durability = 17;
+
+        // Request and wait for the desired body.
+        yield return PutRequest<Item>($"{serverUrl}/{ItemApiName}/{id}", item, (response) =>
+        {
+            item = response;
+        });
+        Debug.Log("Success:\nUpdateItem: " + JsonUtility.ToJson(item));
     }
     #endregion
 
