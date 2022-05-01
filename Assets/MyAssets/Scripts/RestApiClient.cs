@@ -84,7 +84,7 @@ public class RestApiClient : MonoBehaviour
         {
             playerCharacterGroup = body;
         });
-        Debug.Log(":\nGetAllPlayerCharacters: " + JsonUtility.ToJson(playerCharacterGroup));
+        Debug.Log("Success:\nGetAllPlayerCharacters: " + JsonUtility.ToJson(playerCharacterGroup));
     }
 
     IEnumerator GetAllPlayerCharactersByAccountId(string accountId)
@@ -96,7 +96,7 @@ public class RestApiClient : MonoBehaviour
         {
             playerCharacterGroup = body;
         });
-        Debug.Log(":\nGetAllPlayerCharactersByAccountId: " + JsonUtility.ToJson(playerCharacterGroup));
+        Debug.Log("Success:\nGetAllPlayerCharactersByAccountId: " + JsonUtility.ToJson(playerCharacterGroup));
     }
 
     IEnumerator CreatePlayerCharacter()
@@ -116,7 +116,7 @@ public class RestApiClient : MonoBehaviour
         {
             playerCharacter = response;
         });
-        Debug.Log(":\nCreatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
+        Debug.Log("Success:\nCreatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
     }
 
     IEnumerator UpdatePlayerCharacter(string playerCharacterId)
@@ -133,7 +133,7 @@ public class RestApiClient : MonoBehaviour
         {
             playerCharacter = response;
         });
-        Debug.Log(":\nUpdatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
+        Debug.Log("Success:\nUpdatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
     }
 
     IEnumerator DeletePlayerCharacter(string playerCharacterId)
@@ -145,7 +145,7 @@ public class RestApiClient : MonoBehaviour
         {
             deleteResponseMessage = response;
         });
-        Debug.Log(":\nDeletePlayerCharacter: " + JsonUtility.ToJson(deleteResponseMessage));
+        Debug.Log("Success:\nDeletePlayerCharacter: " + JsonUtility.ToJson(deleteResponseMessage));
     }
 
     #region Http methods
@@ -194,8 +194,6 @@ public class RestApiClient : MonoBehaviour
 
             string[] pages = uri.Split('/');
             int page = pages.Length - 1;
-
-            Debug.Log("uri: " + uri);
 
             switch (webRequest.result)
             {
