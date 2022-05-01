@@ -18,6 +18,14 @@ public class RestApiClient : MonoBehaviour
     private const string PlayerCharacterApiName = "player_characters";
 
     [Serializable]
+    class DeleteResponseMessage
+    {
+        public string id;
+        //public string object; //TODO: rename variable
+        public bool is_deleted;
+    }
+
+    [Serializable]
     class PlayerCharacter
     {
         public string id;
@@ -42,6 +50,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(GetAllPlayerCharactersByAccountId("90fdbf9c-167f-4228-a081-73c62fbfac9e"));
         StartCoroutine(CreatePlayerCharacter());
         StartCoroutine(UpdatePlayerCharacter("a764e5b1-ed6e-4544-84b4-1e996b7ea87c"));
+        StartCoroutine(DeletePlayerCharacter("e1233185-d46f-4b96-912e-099d124c0250"));
     }
 
     // Update is called once per frame
@@ -125,6 +134,18 @@ public class RestApiClient : MonoBehaviour
             playerCharacter = response;
         });
         Debug.Log(":\nUpdatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
+    }
+
+    IEnumerator DeletePlayerCharacter(string playerCharacterId)
+    {
+        DeleteResponseMessage deleteResponseMessage = new DeleteResponseMessage();
+
+        // Request and wait for the desired player character body.
+        yield return DeleteRequest<DeleteResponseMessage>($"{serverUrl}/{PlayerCharacterApiName}/{playerCharacterId}", (response) =>
+        {
+            deleteResponseMessage = response;
+        });
+        Debug.Log(":\nDeletePlayerCharacter: " + JsonUtility.ToJson(deleteResponseMessage));
     }
 
     #region Http methods
@@ -232,6 +253,23 @@ public class RestApiClient : MonoBehaviour
         using (UnityWebRequest webRequest = UnityWebRequest.Put(url, JsonUtility.ToJson(body)))
         {
             webRequest.SetRequestHeader("Content-Type", "application/json"); // json raw header config
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError($"Error: {webRequest.error} \nurl: {url}");
+            }
+            else
+            {
+                callback(JsonUtility.FromJson<T>(webRequest.downloadHandler.text));
+            }
+        }
+    }
+    private IEnumerator DeleteRequest<T>(string url, HttpResponse<T> callback)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Delete(url))
+        {
+            webRequest.downloadHandler = new DownloadHandlerBuffer(); // download server response
             yield return webRequest.SendWebRequest();
 
             if (webRequest.result != UnityWebRequest.Result.Success)
