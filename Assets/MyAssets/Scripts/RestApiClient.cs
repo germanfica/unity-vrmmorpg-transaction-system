@@ -68,6 +68,12 @@ public class RestApiClient : MonoBehaviour
         public int durability;
     }
 
+    [Serializable]
+    class ItemGroup
+    {
+        public Item[] group; // The variable name must be: group. Because of the GetAllRequest IEnumerator return value.
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -87,6 +93,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(DeleteAccount("853656bc-1128-4af9-ac01-d9654a55d2e9"));
         */
         StartCoroutine(GetItem("27f66b76-5642-49dc-8455-d495ea1ff1f4"));
+        StartCoroutine(GetAllItems());
     }
 
     // Update is called once per frame
@@ -278,6 +285,18 @@ public class RestApiClient : MonoBehaviour
         });
 
         Debug.Log($"Success:\nGetItem with id {id}: {JsonUtility.ToJson(item)}");
+    }
+
+    IEnumerator GetAllItems()
+    {
+        ItemGroup itemGroup = new ItemGroup();
+
+        // Request and wait for the desired body.
+        yield return GetAllRequest<ItemGroup>($"{serverUrl}/{ItemApiName}", (body) =>
+        {
+            itemGroup = body;
+        });
+        Debug.Log("Success:\nGetAllItems: " + JsonUtility.ToJson(itemGroup));
     }
     #endregion
 
