@@ -40,6 +40,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(GetAllPlayerCharacters());
         StartCoroutine(GetAllPlayerCharactersByAccountId("90fdbf9c-167f-4228-a081-73c62fbfac9e"));
         StartCoroutine(CreatePlayerCharacter());
+        StartCoroutine(UpdatePlayerCharacter("a764e5b1-ed6e-4544-84b4-1e996b7ea87c"));
     }
 
     // Update is called once per frame
@@ -105,6 +106,23 @@ public class RestApiClient : MonoBehaviour
             playerCharacter = response;
         });
         Debug.Log(":\nCreatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
+    }
+
+    IEnumerator UpdatePlayerCharacter(string playerCharacterId)
+    {
+        PlayerCharacter playerCharacter = new PlayerCharacter();
+        playerCharacter.id = playerCharacterId;
+        playerCharacter.name = "test4";
+        playerCharacter.level = 2;
+        playerCharacter.health = 1300;
+        playerCharacter.experience = 870;
+
+        // Request and wait for the desired player character body.
+        yield return PutRequest<PlayerCharacter>($"{serverUrl}/{PlayerCharacterApiName}/{playerCharacterId}", playerCharacter, (response) =>
+        {
+            playerCharacter = response;
+        });
+        Debug.Log(":\nUpdatePlayerCharacter: " + JsonUtility.ToJson(playerCharacter));
     }
 
     #region Http methods
@@ -186,6 +204,23 @@ public class RestApiClient : MonoBehaviour
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError($"Error: {webRequest.error} \nuri: {uri}");
+            }
+            else
+            {
+                callback(JsonUtility.FromJson<T>(webRequest.downloadHandler.text));
+            }
+        }
+    }
+    private IEnumerator PutRequest<T>(string url, T body, HttpResponse<T> callback)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Put(url, JsonUtility.ToJson(body)))
+        {
+            webRequest.SetRequestHeader("Content-Type", "application/json"); // json raw header config
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError($"Error: {webRequest.error} \nurl: {url}");
             }
             else
             {
