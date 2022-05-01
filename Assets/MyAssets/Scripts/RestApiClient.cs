@@ -97,6 +97,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(GetAllItems());
         StartCoroutine(CreateItem());
         StartCoroutine(UpdateItem("cb99f0fb-7e9d-4991-8612-c0e3eab81b15"));
+        StartCoroutine(DeleteItem("621ce1d6-54d7-4c2d-bbde-f6c9cda15997"));
     }
 
     // Update is called once per frame
@@ -339,6 +340,18 @@ public class RestApiClient : MonoBehaviour
             item = response;
         });
         Debug.Log("Success:\nUpdateItem: " + JsonUtility.ToJson(item));
+    }
+
+    IEnumerator DeleteItem(string id)
+    {
+        DeleteResponseMessage deleteResponseMessage = new DeleteResponseMessage();
+
+        // Request and wait for the desired body.
+        yield return DeleteRequest<DeleteResponseMessage>($"{serverUrl}/{ItemApiName}/{id}", (response) =>
+        {
+            deleteResponseMessage = response;
+        });
+        Debug.Log("Success:\nDeleteItem: " + JsonUtility.ToJson(deleteResponseMessage));
     }
     #endregion
 
