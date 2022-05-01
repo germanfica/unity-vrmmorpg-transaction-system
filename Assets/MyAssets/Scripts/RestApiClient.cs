@@ -74,6 +74,7 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(GetAllAccounts());
         StartCoroutine(CreateAccount());
         StartCoroutine(UpdateAccount("88d69a1c-31f9-45e2-abb9-19a4ca251ad7"));
+        StartCoroutine(DeleteAccount("853656bc-1128-4af9-ac01-d9654a55d2e9"));
     }
 
     // Update is called once per frame
@@ -238,6 +239,18 @@ public class RestApiClient : MonoBehaviour
             account = response;
         });
         Debug.Log("Success:\nUpdateAccount: " + JsonUtility.ToJson(account));
+    }
+
+    IEnumerator DeleteAccount(string accountId)
+    {
+        DeleteResponseMessage deleteResponseMessage = new DeleteResponseMessage();
+
+        // Request and wait for the desired body.
+        yield return DeleteRequest<DeleteResponseMessage>($"{serverUrl}/{AccountApiName}/{accountId}", (response) =>
+        {
+            deleteResponseMessage = response;
+        });
+        Debug.Log("Success:\nDeleteAccount: " + JsonUtility.ToJson(deleteResponseMessage));
     }
     #endregion
 
