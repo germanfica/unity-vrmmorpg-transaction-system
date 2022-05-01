@@ -25,6 +25,7 @@ public class RestApiClient : MonoBehaviour
         public int level;
         public int health;
         public int experience;
+        public string account_id;
     }
 
     [Serializable]
@@ -91,17 +92,18 @@ public class RestApiClient : MonoBehaviour
 
     IEnumerator CreatePlayerCharacter()
     {
+        // Create object
         PlayerCharacter playerCharacter = new PlayerCharacter();
 
-        WWWForm form = new WWWForm();
-        form.AddField("accountId", "90fdbf9c-167f-4228-a081-73c62fbfac9e");
-        form.AddField("name", "test");
-        form.AddField("level", 2);
-        form.AddField("health", 90);
-        form.AddField("experience", 100);
+        // Set values
+        playerCharacter.account_id = "90fdbf9c-167f-4228-a081-73c62fbfac9e";
+        playerCharacter.name = "test8";
+        playerCharacter.level = 2;
+        playerCharacter.health = 90;
+        playerCharacter.experience = 100;
 
         // Request and wait for the desired player character body.
-        yield return PostRequest<PlayerCharacter>($"{serverUrl}/{PlayerCharacterApiName}", form, (response) =>
+        yield return PostRequest<PlayerCharacter>($"{serverUrl}/{PlayerCharacterApiName}", playerCharacter, (response) =>
         {
             playerCharacter = response;
         });
@@ -126,6 +128,12 @@ public class RestApiClient : MonoBehaviour
     }
 
     #region Http methods
+    private enum RequestType
+    {
+        GET = 0,
+        POST = 1,
+        PUT = 2
+    }
     // https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest.Get.html
     // https://docs.unity3d.com/2020.3/Documentation/Manual/Coroutines.html
     // It’s best to use coroutines if you need to deal with long asynchronous operations, such as waiting for HTTP transfers,
@@ -188,22 +196,30 @@ public class RestApiClient : MonoBehaviour
         }
     }
     /// <summary>
-    /// Keep in mind that the Content-Type header will be set to application/x-www-form-urlencoded by default.
+    /// Keep in mind that the Content-Type header will be set to application/json by default.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="uri"></param>
     /// <param name="form"></param>
     /// <param name="callback"></param>
     /// <returns></returns>
-    private IEnumerator PostRequest<T>(string uri, WWWForm form, HttpResponse<T> callback)
+    private IEnumerator PostRequest<T>(string url, T body, HttpResponse<T> callback)
     {
-        using (UnityWebRequest webRequest = UnityWebRequest.Post(uri, form))
+        // [DONE] I want to get to: new UnityWebRequest(url, "POST", new DownloadHandlerBuffer(), new UploadHandlerRaw(bodyRawData));
+        using (UnityWebRequest webRequest = new UnityWebRequest(url, RequestType.POST.ToString()))
         {
-            yield return webRequest.SendWebRequest();
+            if (body != null)
+            {
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(body));
+                webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw); // add json raw content
+            }
+            webRequest.downloadHandler = new DownloadHandlerBuffer(); // add download handler buffer
+            webRequest.SetRequestHeader("Content-Type", "application/json"); // json raw header config
+            yield return webRequest.SendWebRequest(); // send the request
 
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError($"Error: {webRequest.error} \nuri: {uri}");
+                Debug.LogError($"Error: {webRequest.error} \nurl: {url}");
             }
             else
             {
