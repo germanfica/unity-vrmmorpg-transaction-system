@@ -34,6 +34,9 @@ public class RestApiClient : MonoBehaviour
         public int health;
         public int experience;
         public string account_id;
+        public float x;
+        public float y;
+        public float z;
     }
 
     [Serializable]
@@ -75,6 +78,13 @@ public class RestApiClient : MonoBehaviour
         public Item[] group; // The variable name must be: group. Because of the GetAllRequest IEnumerator return value.
     }
 
+    // Use Awake to initialize variables or states before the application starts
+    void Awake()
+    {
+        // initialize singleton
+        if (singleton == null) singleton = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,11 +103,11 @@ public class RestApiClient : MonoBehaviour
         StartCoroutine(UpdateAccount("88d69a1c-31f9-45e2-abb9-19a4ca251ad7"));
         StartCoroutine(DeleteAccount("853656bc-1128-4af9-ac01-d9654a55d2e9"));
         */
-        StartCoroutine(GetItem("27f66b76-5642-49dc-8455-d495ea1ff1f4"));
-        StartCoroutine(GetAllItems());
-        StartCoroutine(CreateItem());
-        StartCoroutine(UpdateItem("cb99f0fb-7e9d-4991-8612-c0e3eab81b15"));
-        StartCoroutine(DeleteItem("621ce1d6-54d7-4c2d-bbde-f6c9cda15997"));
+        //StartCoroutine(GetItem("27f66b76-5642-49dc-8455-d495ea1ff1f4"));
+        //StartCoroutine(GetAllItems());
+        //StartCoroutine(CreateItem());
+        //StartCoroutine(UpdateItem("cb99f0fb-7e9d-4991-8612-c0e3eab81b15"));
+        //StartCoroutine(DeleteItem("621ce1d6-54d7-4c2d-bbde-f6c9cda15997"));
     }
 
     // Update is called once per frame
@@ -106,10 +116,31 @@ public class RestApiClient : MonoBehaviour
 
     }
 
+    public IEnumerator CharacterLoad(string characterId, GameObject prefab, HttpResponse<GameObject> callback) {
+        //StartCoroutine(GetPlayerCharacter(characterId));
+
+        yield return GetPlayerCharacter(characterId, (playerCharacter) => {
+            GameObject go = Instantiate(prefab.gameObject);
+            Player player = go.GetComponent<Player>();
+
+            // set values
+            player.id = playerCharacter.id; // player character id
+            player.name = playerCharacter.name; // player character name
+            player.level = playerCharacter.level;
+            player.health = playerCharacter.health;
+            player.experience = playerCharacter.experience;
+            player.accountId = playerCharacter.account_id;
+            Vector3 position = new Vector3(playerCharacter.x, playerCharacter.y, playerCharacter.z);
+            player.gameObject.transform.position = position;
+
+            callback(go);
+        });
+    }
+
     #region Player Character
     // return a value from a coroutine
     // http://answers.unity.com/answers/1248539/view.html
-    IEnumerator GetPlayerCharacter(string id)
+    IEnumerator GetPlayerCharacter(string id, HttpResponse<PlayerCharacter> callback)
     {
         PlayerCharacter playerBody = new PlayerCharacter();
 
@@ -118,6 +149,7 @@ public class RestApiClient : MonoBehaviour
         yield return GetRequest<PlayerCharacter>($"{serverUrl}/{PlayerCharacterApiName}/{id}", (body) =>
         {
             playerBody = body;
+            callback(body); // response body
         });
 
         Debug.Log($"Success:\nGetPlayerCharacter with id {id}: {JsonUtility.ToJson(playerBody)}");
