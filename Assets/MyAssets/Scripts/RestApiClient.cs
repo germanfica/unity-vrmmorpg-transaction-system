@@ -133,6 +133,9 @@ public class RestApiClient : MonoBehaviour
             Vector3 position = new Vector3(playerCharacter.x, playerCharacter.y, playerCharacter.z);
             player.gameObject.transform.position = position;
 
+            //LoadItemStorage(player); // Load Item Storage
+            StartCoroutine(GetAllItemsByPlayerCharacterId(player.id));
+
             callback(go);
         });
     }
@@ -333,6 +336,18 @@ public class RestApiClient : MonoBehaviour
             itemGroup = body;
         });
         Debug.Log("Success:\nGetAllItems: " + JsonUtility.ToJson(itemGroup));
+    }
+
+    IEnumerator GetAllItemsByPlayerCharacterId(string id)
+    {
+        ItemGroup itemGroup = new ItemGroup();
+
+        // Request and wait for the desired body.
+        yield return GetAllRequest<ItemGroup>($"{serverUrl}/{ItemApiName}?player_character_id={id}", (body) =>
+        {
+            itemGroup = body;
+        });
+        Debug.Log("Success:\nGetAllItemsByPlayerCharacterId: " + JsonUtility.ToJson(itemGroup));
     }
 
     IEnumerator CreateItem()
