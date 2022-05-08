@@ -116,7 +116,7 @@ public class RestApiClient : MonoBehaviour
 
     }
 
-    public IEnumerator CharacterLoad(string characterId, GameObject prefab, HttpResponse<GameObject> callback) {
+    public IEnumerator CharacterLoad(string characterId, Player prefab, HttpResponse<GameObject> callback) {
         //StartCoroutine(GetPlayerCharacter(characterId));
 
         yield return GetPlayerCharacter(characterId, (playerCharacter) => {

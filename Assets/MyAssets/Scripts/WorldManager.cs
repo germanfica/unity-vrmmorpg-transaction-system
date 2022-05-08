@@ -5,7 +5,7 @@ using UnityEngine;
 public class WorldManager : MonoBehaviour
 {
     [Header("Player Settings")]
-    public GameObject playerPrefab;
+    public Player playerPrefab;
     public List<string> characters = new List<string>();
 
     // Use Awake to initialize variables or states before the application starts
