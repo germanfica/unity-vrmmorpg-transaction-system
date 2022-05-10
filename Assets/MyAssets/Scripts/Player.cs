@@ -1,3 +1,4 @@
+using com.germanfica.vrmmorpg.entity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,13 +43,18 @@ public class Player : MonoBehaviour
         set { _experience = value; }
     }
 
+    // all entities should have an inventory, not just the player.
+    // useful for monster loot, chests, etc.
+    [Header("Item Storage")]
+    [SerializeField] public List<Item> itemStorage = new List<Item>();
+
     // some meta info
     [HideInInspector] public string accountId = "";
 
     // Use Awake to initialize variables or states before the application starts
     void Awake()
     {
-
+        localPlayer = this;
     }
 
     // Start is called before the first frame update
@@ -72,5 +78,7 @@ public class Player : MonoBehaviour
     protected void UpdateTexts()
     {
         if (nameText != null) nameText.text = name;
+        //if (nameText != null && localPlayer.gameObject.name == name) nameText.color = Color.red;
+        nameText.color = nameText != null && localPlayer.gameObject.name == name ? Color.red : Color.white;
     }
 }

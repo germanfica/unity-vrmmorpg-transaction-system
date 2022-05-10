@@ -1,3 +1,4 @@
+using com.germanfica.vrmmorpg.api;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,9 @@ public class WorldManager : MonoBehaviour
     [Header("Player Settings")]
     public Player playerPrefab;
     public List<string> characters = new List<string>();
+    public KeyCode switchPlayerKey = KeyCode.S;
+    public List<GameObject> players = new List<GameObject>();
+    public int currentPlayerIndex = 0;
 
     // Use Awake to initialize variables or states before the application starts
     void Awake()
@@ -27,7 +31,7 @@ public class WorldManager : MonoBehaviour
             Debug.Log("character id: " + character);
             Debug.Log("player prefab: " + playerPrefab.name);
             StartCoroutine(RestApiClient.singleton.CharacterLoad(character, playerPrefab, (go) => {
-
+                players.Add(go);
                 Debug.Log("Name: " + go.name);
             }));
         }
@@ -36,6 +40,17 @@ public class WorldManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(switchPlayerKey)) {
+            Player.localPlayer = players[currentPlayerIndex].GetComponent<Player>();
+            NextPlayerIndex();
+        }
+    }
+
+    private void NextPlayerIndex() {
+        if (currentPlayerIndex < players.Count -1) {
+            currentPlayerIndex++;
+        } else {
+            currentPlayerIndex = 0;
+        }
     }
 }
